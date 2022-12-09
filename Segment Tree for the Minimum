@@ -1,0 +1,92 @@
+#include <bits/stdc++.h>
+#define ll long long int
+#define endl '\n'
+#define vll vector<long long int>
+#define mll map<long long int, long long int>
+#define mod 1000000007
+#define pb push_back
+#define pob pop_back
+#define gcd(x, y) __gcd(x, y)
+#define sorta(v) sort(v.begin(), v.end())
+#define sortd(v) sort(v.begin(), v.end(), greater<long long int>())
+#define pi M_PI
+#define in insert
+#define rmv erase
+#define Yes cout << "YES" << endl
+#define cout(x) cout << x << endl
+#define No cout << "NO" << endl
+#define yes cout << "Yes" << endl
+#define no cout << "No" << endl
+using namespace std;
+ll a[200001], h[1000005];
+void build(ll index, ll low, ll high)
+{
+    if (low == high)
+    {
+        h[index] = a[low];
+        return;
+    }
+    ll mid = (low + high) / 2;
+    build(2*index, low, mid);
+    build(2*index+1, mid + 1, high);
+    h[index] = min(h[2*index] , h[2*index+1]);
+}
+ll query(ll ind, ll low, ll high, ll l, ll r)
+{
+    if (low >= l && high <= r) // be careful
+        return h[ind];
+    else if (l > high || r < low)
+        return INT_MAX;
+    ll mid = (low + high) / 2;
+    ll left = query(2*ind, low, mid, l, r);
+    ll right = query(2*ind+1, mid + 1, high, l, r);
+    return min(left , right);
+}
+void update(ll ind, ll low, ll high, ll change, ll at_index)//striver comment
+{
+    if (low == high)
+    {
+        h[ind] = change;
+    }
+    else
+    {
+        ll mid = (low + high) / 2;
+        if (at_index <= mid && at_index >= low)
+            update(2*ind, low, mid, change, at_index);
+        else
+            update(2*ind+1, mid + 1, high, change, at_index);
+        h[ind] = min(h[2*ind] , h[2*ind+1]);
+    }
+}
+void solve()
+{
+    ll n, i;
+    ll q;
+    cin >> n >> q;
+    for (i = 1; i <= n; i++)
+        cin >> a[i];
+    build(1, 1, n);
+    while (q--)
+    {
+        ll xx, l, r;
+        cin >> xx >> l >> r;
+        if (xx == 1)
+            ++l,update(1, 1, n, r, l);
+         else
+            ++l,cout << query(1, 1, n, l, r) << endl;
+    }
+}
+int32_t main()
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    ll t;
+    // cin >> t;
+    t = 1;
+    while (t--)
+    {
+        solve();
+        cout << endl;
+    }
+}
