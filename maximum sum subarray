@@ -1,0 +1,122 @@
+#include <bits/stdc++.h>
+#define ll long long int
+#define endl '\n'
+#define vll vector<long long int>
+#define mll map<long long int, long long int>
+#define mod 1000000007
+#define pb push_back
+#define pob pop_back
+#define gcd(x, y) __gcd(x, y)
+#define sorta(v) sort(v.begin(), v.end())
+#define sortd(v) sort(v.begin(), v.end(), greater<long long int>())
+#define pi M_PI
+#define in insert
+#define rmv erase
+#define Yes cout << "YES" << endl
+#define cout(x) cout << x << endl
+#define No cout << "NO" << endl
+#define yes cout << "Yes" << endl
+#define no cout << "No" << endl
+using namespace std;
+ll a[200001];
+struct item
+{
+    ll seg;
+    ll pref;
+    ll suff;
+    ll sum;
+} seg[4 * 200001];
+item NEUTRAL_ELEMENT = {0, 0, 0, 0};
+item single(ll v)
+{
+    if (v > 0)
+        return {v, v, v, v};
+    else
+        return {0, 0, 0, v};
+}
+item merge(item a, item b)
+{
+    return {
+        max(a.seg, max(b.seg, a.suff + b.pref)),
+        max(a.pref, a.sum + b.pref),
+        max(b.suff, b.sum + a.suff),
+        a.sum + b.sum
+        };
+}
+void build(ll index, ll low, ll high)
+{
+    if (low == high)
+    {
+        seg[index] = single(a[low]);
+        return;
+    }
+    ll mid = (low + high) / 2;
+    build(2 * index, low, mid);
+    build(2 * index + 1, mid + 1, high);
+    seg[index] = merge(seg[2 * index], seg[2 * index + 1]);
+}
+void update(ll index, ll low, ll high, ll at_index, ll value)
+{
+    if (at_index < low || at_index > high)
+        return;
+    if (low == high)
+    {
+        seg[index] = single(value);
+        return;
+    }
+    ll mid = (low + high) / 2;
+    if (at_index >= low && at_index <= mid)
+        update(2 * index, low, mid, at_index, value);
+    else
+        update(2 * index + 1, mid + 1, high, at_index, value);
+    seg[index] = merge(seg[2 * index], seg[2 * index + 1]);
+}
+item query(ll index, ll low, ll high, ll l, ll r)
+{
+    if (low > r || high < l)
+    {
+        return NEUTRAL_ELEMENT;
+    }
+    if (low >= l && high <= r)
+    {
+        return seg[index];
+    }
+    ll mid = (low + high) / 2;
+    item left = query(2 * index, low, mid, l, r);
+    item right = query(2 * index + 1, mid + 1, high, l, r);
+    return merge(left, right);
+}
+void solve()
+{
+    ll n, i;
+    ll q;
+    cin >> n >> q;
+    for (i = 1; i <= n; i++)
+        cin >> a[i];
+    build(1, 1, n);
+    auto it = query(1, 1, n, 1, n);
+    cout << it.seg << endl;
+    while (q--)
+    {
+        ll xx, l, r;
+        cin >> l >> r;
+        ++l;
+        update(1, 1, n, l, r);
+        it = query(1, 1, n, 1, n);
+        cout << it.seg << endl;
+    }
+}
+int32_t main()
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    ll t;
+    // cin >> t;
+    t = 1;
+    while (t--)
+    {
+        solve();
+        cout << endl;
+    }
+}
