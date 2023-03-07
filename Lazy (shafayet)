@@ -28,7 +28,7 @@ void init(int node, int b, int e)
 
 void update(int node, int b, int e, int i, int j, ll x)
 {
-    if (i > e || j < b) // b,e চেঞ্জ
+    if (i > e || j < b) // b,e change hocche
         return;
     if (b >= i && e <= j) 
     {
